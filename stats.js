@@ -98,6 +98,13 @@ var stats = {
   }
 };
 
+// Sanitize a key
+function sanitizeKey(key) {
+  return key.replace(/\s+/g, '_')
+            .replace(/\//g, '-')
+            .replace(/[^a-zA-Z_\-0-9\.]/g, '');
+}
+
 // Global for the logger
 var l;
 
@@ -148,10 +155,8 @@ config.configFile(process.argv[2], function (config, oldConfig) {
           l.log(metrics[midx].toString());
         }
         var bits = metrics[midx].toString().split(':');
-        var key = bits.shift()
-                      .replace(/\s+/g, '_')
-                      .replace(/\//g, '-')
-                      .replace(/[^a-zA-Z_\-0-9\.]/g, '');
+        var key = bits.shift();
+        if (config.sanitizeKey !== false) key = sanitizeKey(key);
 
         if (keyFlushInterval > 0) {
           if (! keyCounter[key]) {
